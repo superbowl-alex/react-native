@@ -4,9 +4,10 @@ import {
   Text,
   View,
   ImageBackground,
-  Image,
   TextInput,
   TouchableOpacity,
+  Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 
 export default function RegistrationScreen() {
@@ -17,18 +18,21 @@ export default function RegistrationScreen() {
     password: false,
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
   // handlers
   const handleInputFocus = (textinput) => {
     setIsFocused({
       [textinput]: true,
     });
+    setIsShowKeyboard(true);
   };
 
   const handleInputBlur = (textinput) => {
     setIsFocused({
       [textinput]: false,
     });
+    setIsShowKeyboard(false);
   };
 
   const handleTogglePassword = () => {
@@ -41,9 +45,17 @@ export default function RegistrationScreen() {
         style={styles.image}
         source={require("../assets/images/background.jpg")}
       >
-        <View style={styles.formWrap}>
-          <Text style={styles.formTitle}>Register</Text>
-          <View style={styles.form}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View
+            style={
+              isShowKeyboard
+                ? [styles.form, { paddingBottom: 32 }]
+                : styles.form
+            }
+          >
+            <Text style={styles.formTitle}>Register</Text>
             <TextInput
               style={
                 isFocused.login
@@ -74,13 +86,22 @@ export default function RegistrationScreen() {
               onFocus={() => handleInputFocus("email")}
               onBlur={() => handleInputBlur("email")}
             />
-            <View style={styles.wrapPassword}>
+            <View
+              style={
+                isShowKeyboard
+                  ? [styles.wrapPassword, { marginBottom: 0 }]
+                  : styles.wrapPassword
+              }
+            >
               <TextInput
                 style={
                   isFocused.password
                     ? [
                         styles.input,
-                        { borderColor: "#FF6C00", backgroundColor: "#FFFFFF" },
+                        {
+                          borderColor: "#FF6C00",
+                          backgroundColor: "#FFFFFF",
+                        },
                       ]
                     : styles.input
                 }
@@ -98,22 +119,24 @@ export default function RegistrationScreen() {
                 {!showPassword ? "Show" : "Hide"}
               </Text>
             </View>
-            <TouchableOpacity activeOpacity={0.7} style={styles.button}>
-              <Text style={styles.buttonTitle}>Register</Text>
-            </TouchableOpacity>
-            <View style={styles.warning}>
-              <Text style={styles.warningText}>Already have an account?</Text>
-              <TouchableOpacity activeOpacity={0.7} style={styles.warningBtn}>
-                <Text style={styles.warningBtnTitle}>Login</Text>
+            <View style={{ display: isShowKeyboard ? "none" : "flex" }}>
+              <TouchableOpacity activeOpacity={0.7} style={styles.button}>
+                <Text style={styles.buttonTitle}>Register1</Text>
               </TouchableOpacity>
+              <View style={styles.warning}>
+                <Text style={styles.warningText}>Already have an account?</Text>
+                <TouchableOpacity activeOpacity={0.7} style={styles.warningBtn}>
+                  <Text style={styles.warningBtnTitle}>Login</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.avatarSceleton}>
+              <View style={styles.avatarAdd}>
+                <Text style={styles.avatarAddText}>+</Text>
+              </View>
             </View>
           </View>
-          <View style={styles.avatarSceleton}>
-            <View style={styles.avatarAdd}>
-              <Text style={styles.avatarAddText}>+</Text>
-            </View>
-          </View>
-        </View>
+        </KeyboardAvoidingView>
       </ImageBackground>
     </View>
   );
@@ -125,33 +148,28 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   image: {
-    position: "relative",
     flex: 1,
-    resizeMode: "contain",
+    resizeMode: "cover",
+    justifyContent: "flex-end",
   },
-  formWrap: {
-    position: "absolute",
+  form: {
+    position: "relative",
     width: "100%",
-    bottom: 0,
-    flex: 1,
+    paddingHorizontal: 16,
+    paddingBottom: 78,
+    paddingTop: 92,
     backgroundColor: "#fff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    paddingTop: 92,
-    justifyContent: "flex-end",
   },
   formTitle: {
+    marginBottom: 32,
     fontSize: 30,
     // fontWeight: 500,
     lineHeight: 35,
     letterSpacing: 0.01,
     color: "#212121",
     textAlign: "center",
-  },
-  form: {
-    marginHorizontal: 16,
-    marginTop: 32,
-    marginBottom: 78,
   },
   input: {
     fontSize: 16,
@@ -167,6 +185,7 @@ const styles = StyleSheet.create({
   },
   wrapPassword: {
     position: "relative",
+    marginBottom: 43,
   },
   inputPasswordText: {
     position: "absolute",
@@ -177,8 +196,8 @@ const styles = StyleSheet.create({
     color: "#1B4371",
   },
   button: {
+    marginBottom: 16,
     height: 51,
-    marginTop: 43,
     backgroundColor: "#FF6C00",
     borderRadius: 100,
     justifyContent: "center",
@@ -190,9 +209,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   warning: {
-    flex: 1,
     flexDirection: "row",
-    marginTop: 16,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -203,9 +220,9 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   warningBtn: {
-    height: 20,
+    height: 23,
     backgroundColor: "#FF6C00",
-    borderRadius: 10,
+    borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 10,
@@ -219,7 +236,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -60,
     left: "50%",
-    marginLeft: -60,
+    marginLeft: -45,
     width: 120,
     height: 120,
     borderRadius: 16,
