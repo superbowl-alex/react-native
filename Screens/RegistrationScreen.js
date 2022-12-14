@@ -45,9 +45,7 @@ export default function RegistrationScreen() {
         style={styles.image}
         source={require("../assets/images/background.jpg")}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : ""}>
           <View
             style={
               isShowKeyboard
